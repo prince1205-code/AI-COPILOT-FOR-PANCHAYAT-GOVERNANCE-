@@ -1,0 +1,52 @@
+{
+    "scheme_id": "PMAY-G",
+
+    "scheme_name": "Pradhan Mantri Awas Yojana Gramin",
+
+    "keywords": [
+        "PMAY",
+        "PMAY-G",
+        "PM Awas",
+        "Awas",
+        "Housing",
+        "House",
+        "Home"
+    ],
+
+    "category": "Housing",
+
+    "description": "A rural housing scheme that provides financial assistance to eligible families for constructing permanent houses.",
+
+    "objective": "Provide pucca houses with basic amenities to all eligible rural households.",
+
+    "benefits": [
+        "Financial assistance for house construction",
+        "Support for sanitation facilities",
+        "Better living conditions"
+    ],
+
+    "eligibility": [
+        "Rural household",
+        "Eligible according to SECC data",
+        "No permanent house"
+    ],
+
+    "required_documents": [
+        "Aadhaar Card",
+        "Income Certificate",
+        "Bank Account",
+        "Mobile Number"
+    ],
+
+    "application_process": [
+        "Visit Gram Panchayat",
+        "Submit required documents",
+        "Verification",
+        "Approval",
+        "Receive financial assistance"
+    ],
+
+    "official_website": "https://pmayg.nic.in",
+
+    "last_updated": "2026-06-26"
+}
