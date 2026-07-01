@@ -1,0 +1,159 @@
+{
+    "Farmer": {
+        "boost": {
+            "pm kisan samman nidhi": 45,
+            "pradhan mantri kisan": 40,
+            "pm kisan": 40,
+            "kisan credit card": 35,
+            "pradhan mantri fasal bima": 35,
+            "pmfby": 35,
+            "krishi sinchai yojana": 30,
+            "pmksy": 30,
+            "paramparagat krishi": 30,
+            "natural farming": 25,
+            "fasal bima": 25,
+            "kisan": 20,
+            "krishi": 20,
+            "crop insurance": 20,
+            "irrigation": 15,
+            "cultivator": 15,
+            "agriculturist": 15,
+            "agriculture": 10,
+            "farmer": 10,
+            "fertilizer": 8,
+            "seed": 8,
+            "soil health": 10,
+            "soil": 5,
+            "tractor": 8,
+            "fasal": 10,
+            "credit": 5
+        },
+        "penalty": {
+            "pregnancy": 50,
+            "maternity": 50,
+            "student scholarship": 45,
+            "scholarship": 40,
+            "student": 35,
+            "fisheries": 40,
+            "aquaculture": 40,
+            "marine fisheries": 45,
+            "marine": 35,
+            "boat": 40,
+            "fish": 35,
+            "women empowerment": 25,
+            "girl child": 20
+        }
+    },
+
+    "Student": {
+        "boost": {
+            "pre-matric scholarship": 35,
+            "post-matric scholarship": 35,
+            "merit scholarship": 30,
+            "scholarship": 30,
+            "higher education": 25,
+            "student": 25,
+            "education loan": 25,
+            "education": 20,
+            "college": 20,
+            "school": 20,
+            "hostel": 15,
+            "research fellowship": 20,
+            "research": 10,
+            "coaching": 15,
+            "skill training": 15
+        },
+        "penalty": {
+            "fisheries": 25,
+            "marine": 25,
+            "fish": 20,
+            "pregnancy": 30,
+            "maternity": 30,
+            "construction worker": 20,
+            "farmer": 15
+        }
+    },
+
+    "Women": {
+        "boost": {
+            "mahila shakti": 35,
+            "women empowerment": 35,
+            "maternity benefit": 30,
+            "pradhan mantri matru": 30,
+            "self help group": 25,
+            "women entrepreneur": 30,
+            "widow pension": 30,
+            "women": 20,
+            "woman": 20,
+            "female": 20,
+            "widow": 25,
+            "girl child": 25,
+            "girl": 15,
+            "mother": 15,
+            "maternity": 20,
+            "pregnancy": 20
+        },
+        "penalty": {
+            "marine fisheries": 25,
+            "fisheries": 20,
+            "fish": 20,
+            "boat": 20
+        }
+    },
+
+    "Labour": {
+        "boost": {
+            "construction worker": 35,
+            "building worker": 35,
+            "unorganised worker": 30,
+            "bocw": 30,
+            "labour welfare": 30,
+            "labor welfare": 30,
+            "minimum wages": 25,
+            "esi scheme": 25,
+            "provident fund": 20,
+            "labour": 20,
+            "labor": 20,
+            "worker": 20,
+            "employment guarantee": 20,
+            "employment": 15,
+            "construction": 15,
+            "wages": 15,
+            "tool kit": 15
+        },
+        "penalty": {
+            "scholarship": 20,
+            "student": 15,
+            "fisheries": 20,
+            "marine": 20
+        }
+    },
+
+    "Business": {
+        "boost": {
+            "startup india": 35,
+            "mudra loan": 35,
+            "stand up india": 30,
+            "msme loan": 30,
+            "micro small medium": 25,
+            "msme": 25,
+            "entrepreneur": 25,
+            "startup": 25,
+            "self employment": 20,
+            "business loan": 20,
+            "enterprise": 20,
+            "industry": 15,
+            "loan": 10,
+            "business": 15,
+            "subsidy": 10
+        },
+        "penalty": {
+            "scholarship": 20,
+            "student": 20,
+            "fisheries": 20,
+            "marine": 20,
+            "pregnancy": 20,
+            "maternity": 20
+        }
+    }
+}

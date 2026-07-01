@@ -11,8 +11,8 @@ Project : AI Copilot for Panchayat Governance
 =========================================================
 """
 
-from typing import Dict, List
-
+from typing import Dict, List, Optional
+from datetime import datetime
 
 class MemoryService:
 
@@ -22,27 +22,38 @@ class MemoryService:
 
         self.sessions: Dict[str, List[dict]] = {}
 
-    def add_message(self,
-                    session_id: str,
-                    role: str,
-                    content: str):
+    def add_message(
+        self,
+        session_id: str,
+        role: str,
+        content: str,
+        intent: str = "unknown",
+        metadata: Optional[dict] = None
+    ):
 
         if session_id not in self.sessions:
-
             self.sessions[session_id] = []
 
-        self.sessions[session_id].append({
+        message = {
 
             "role": role,
 
-            "content": content
+            "content": content,
 
-        })
+            "intent": intent,
+
+            "timestamp": datetime.now().isoformat(),
+
+            "metadata": metadata or {}
+
+        }
+
+        self.sessions[session_id].append(message)
 
         if len(self.sessions[session_id]) > self.max_history:
-
             self.sessions[session_id] = self.sessions[session_id][-self.max_history:]
 
+            
     def get_history(self,
                     session_id: str):
 
@@ -64,7 +75,12 @@ class MemoryService:
 
         for msg in history:
 
-            print(f"{msg['role']} : {msg['content']}")
+            print(f"""
+                    Role      : {msg['role']}
+                    Intent    : {msg['intent']}
+                    Message   : {msg['content']}
+                    Time      : {msg['timestamp']}
+                    """)
 
         print("\n==================================")
 
@@ -75,33 +91,24 @@ if __name__ == "__main__":
     SESSION = "prince"
 
     memory.add_message(
-
         SESSION,
-
         "user",
-
-        "Hello"
-
+        "Hello",
+        intent="chat"
     )
 
     memory.add_message(
-
         SESSION,
-
         "assistant",
-
-        "Hello Prince!"
-
+        "Hello Prince!",
+        intent="chat"
     )
 
     memory.add_message(
-
         SESSION,
-
         "user",
-
-        "Tell me about PMAY."
-
+        "Tell me about PMAY.",
+        intent="scheme"
     )
 
     memory.print_history(SESSION)

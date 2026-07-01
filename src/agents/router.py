@@ -37,14 +37,29 @@ class IntentRouter:
             "scheme": [
                 "scheme",
                 "yojana",
-                "pm awas",
-                "pm kisan",
+                "pm",
+                "pradhan",
+                "bharat",
+                "ayushman",
+                "kisan",
+                "awas",
+                "housing",
+                "house",
+                "home",
+                "health",
+                "insurance",
+                "farmer",
+                "agriculture",
+                "loan",
                 "scholarship",
-                "benefit",
-                "eligibility",
-                "subsidy"
+                "employment",
+                "pension",
+                "subsidy",
+                "gas",
+                "ujjwala",
+                "ration"
             ],
-
+            
             "document": [
                 "certificate",
                 "application",

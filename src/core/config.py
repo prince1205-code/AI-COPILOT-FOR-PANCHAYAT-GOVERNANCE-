@@ -33,7 +33,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
+ 
 # =========================
 # Project Root Directory
 # =========================
@@ -49,20 +49,28 @@ load_dotenv(dotenv_path=dotenv_path)
 
 print("API Key Loaded:", os.getenv("GEMINI_API_KEY"))
 
+# ---------------------------------------------------------
+# Project Paths
+# ---------------------------------------------------------
 
-# =========================
-# Folder Paths
-# =========================
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
-DATA_DIR = BASE_DIR / "data"
-KNOWLEDGE_BASE_DIR = BASE_DIR / "knowledge_base"
-DOCUMENTS_DIR = BASE_DIR / "documents"
-OUTPUTS_DIR = BASE_DIR / "outputs"
-MODELS_DIR = BASE_DIR / "models"
-LOGS_DIR = BASE_DIR / "logs"
+dotenv_path = PROJECT_ROOT / ".env"
 
-print("BASE_DIR:", BASE_DIR)
-print("API KEY:", os.getenv("GEMINI_API_KEY"))
+print("Project Root:", PROJECT_ROOT)
+print("Loading .env from:", dotenv_path)
+
+load_dotenv(dotenv_path=dotenv_path)
+
+print("API Key Loaded:", os.getenv("GEMINI_API_KEY"))
+
+DATA_DIR = PROJECT_ROOT / "data"
+KNOWLEDGE_BASE_DIR = PROJECT_ROOT / "knowledge_base"
+DOCUMENTS_DIR = PROJECT_ROOT / "documents"
+OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+MODELS_DIR = PROJECT_ROOT / "models"
+LOGS_DIR = PROJECT_ROOT / "logs"
+
 
 
 # =========================

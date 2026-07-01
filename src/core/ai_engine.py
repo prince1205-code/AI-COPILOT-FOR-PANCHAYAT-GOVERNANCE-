@@ -20,6 +20,7 @@ import google.generativeai as genai
 
 from src.core.config import GEMINI_API_KEY, MODEL_NAME
 from src.core.prompts import SYSTEM_PROMPT
+from google.api_core.exceptions import DeadlineExceeded
 
 
 # =====================================================
@@ -42,12 +43,11 @@ class SahayakAI:
 
         self.model = genai.GenerativeModel(MODEL_NAME)
 
-        self.chat = self.model.start_chat(history=[])
 
         print("✅ Sahayak AI Initialized Successfully")
 
 
-    def ask(self, user_question: str):
+    def generate(self, context: str):
 
         """
         Send a message to Gemini.
@@ -61,26 +61,31 @@ class SahayakAI:
         AI Response
         """
 
-        prompt = f"""
-{SYSTEM_PROMPT}
-
-User:
-{user_question}
-
-Assistant:
-"""
-
         try:
-
-            response = self.chat.send_message(prompt)
-
+            response = self.model.generate_content(context)
             return response.text
 
+        except DeadlineExceeded:
+            return (
+                "The AI service timed out. "
+                "Please try again."
+            )
+
         except Exception as e:
+            return f"Error : {e}"
+        
+        
 
-            return f"Error : {str(e)}"
+    def ask(self, context: str):
+        """
+        Backward compatible wrapper.
+        Existing agents can continue using ask().
+        """
 
+        return self.generate(context)
+    
 
+    
     def reset_chat(self):
         """
         Clears conversation history.
@@ -88,7 +93,7 @@ Assistant:
 
         self.chat = self.model.start_chat(history=[])
 
-        print("✅ Chat history cleared.")
+        print("Stateless AI Engine. No chat history to reset")
 
 
 # =====================================================
@@ -97,6 +102,7 @@ Assistant:
 
 if __name__ == "__main__":
 
+    
     ai = SahayakAI()
 
     print()
@@ -110,7 +116,7 @@ if __name__ == "__main__":
             print("\n🤖 Sahayak AI : Goodbye!")
             break
 
-        answer = ai.ask(question)
+        answer = ai.generate(question)
 
         print("\n🤖 Sahayak AI :")
         print(answer)

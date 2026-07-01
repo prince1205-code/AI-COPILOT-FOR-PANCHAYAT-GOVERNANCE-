@@ -1,106 +1,90 @@
 """
-=========================================================
-Sahayak AI - Orchestrator
-=========================================================
+Sahayak AI - Agentic Orchestrator
 
-Purpose:
-    Central controller of the Sahayak AI system.
-
-Responsibilities:
-    - Receive user query
-    - Detect intent
-    - Route request to correct agent
-    - Return final response
-
-Author : Prince Kumar
-Project : AI Copilot for Panchayat Governance
-=========================================================
+Compatibility wrapper around the planner/executor workflow. The public
+`process()` method still returns a plain response string for older callers.
 """
+from __future__ import annotations
 
-# =====================================================
-# Imports
-# =====================================================
+import logging
 
-from src.agents.router import IntentRouter
 from src.agents.chat_agent import ChatAgent
+from src.agents.language.detector import LanguageDetector
+from src.agents.language.language_agent import LanguageAgent
+from src.agents.orchestrator.agent_registry import AgentRegistry
+from src.agents.orchestrator.executor import Executor
+from src.agents.orchestrator.planner import Planner
+from src.agents.orchestrator.workflow import AgenticWorkflow, WorkflowResult
 from src.agents.scheme_agent import SchemeAgent
+from src.recommendation.eligibility_engine import EligibilityEngine
+from src.recommendation.profile_parser import ProfileParser
+from src.rag.retriever import Retriever
+from src.services.memory_service import MemoryService
 
+log = logging.getLogger(__name__)
 
-# =====================================================
-# Orchestrator
-# =====================================================
 
 class SahayakOrchestrator:
+    """Agentic planner that coordinates existing Sahayak agents."""
 
-    def __init__(self):
+    def __init__(
+        self,
+        *,
+        chat_agent: ChatAgent | None = None,
+        scheme_agent: SchemeAgent | None = None,
+        memory: MemoryService | None = None,
+        language_agent: LanguageAgent | None = None,
+        parser: ProfileParser | None = None,
+        engine: EligibilityEngine | None = None,
+        retriever: Retriever | None = None,
+        session_id: str = "default",
+    ):
+        self.session_id = session_id
+        self.memory = memory or MemoryService()
 
-        print("Initializing Sahayak AI Orchestrator...")
+        registry = AgentRegistry(
+            chat_agent=chat_agent or ChatAgent(),
+            scheme_agent=scheme_agent or SchemeAgent(),
+            memory=self.memory,
+            language_agent=language_agent or LanguageAgent(LanguageDetector(), self.memory),
+            parser=parser or ProfileParser(),
+            engine=engine or EligibilityEngine(),
+            retriever=retriever,
+        )
+        self.workflow = AgenticWorkflow(
+            planner=Planner(),
+            executor=Executor(registry),
+        )
 
-        self.router = IntentRouter()
+    def process(self, user_query: str) -> str:
+        """Backward-compatible response-only API."""
+        return self.process_with_trace(user_query, self.session_id).answer
 
-        self.chat_agent = ChatAgent()
+    def process_with_trace(self, user_query: str, session_id: str | None = None) -> WorkflowResult:
+        """Run the agentic workflow and return answer plus execution trace."""
+        active_session = session_id or self.session_id
+        print(
+            "[Orchestrator][Core] Execution Started: "
+            f"session={active_session} query={user_query}"
+        )
+        log.info("Orchestrator execution started session=%s", active_session)
+        result = self.workflow.run(user_query, active_session)
+        print(f"[Orchestrator][Core] Final Response: {result.answer[:300]}")
+        log.info("Orchestrator execution finished session=%s chars=%d", active_session, len(result.answer))
+        return result
 
-        self.scheme_agent = SchemeAgent()
-
-        print("Orchestrator Ready.\n")
-
-
-    def process(self, user_query: str):
-
-        """
-        Process user request.
-        """
-
-        intent = self.router.route_query(user_query)
-
-        print(f"[Intent Detected] -> {intent}")
-
-        if intent == "chat":
-
-            return self.chat_agent.process(user_query)
-
-        elif intent == "scheme":
-
-            return self.scheme_agent.process(user_query)
-
-        elif intent == "document":
-
-            return (
-                "🚧 Document Agent is under development."
-            )
-
-        elif intent == "knowledge":
-
-            return (
-                "🚧 Knowledge Agent is under development."
-            )
-
-        else:
-
-            return (
-                "Sorry, I couldn't understand your request."
-            )
-
-
-# =====================================================
-# Testing
-# =====================================================
 
 if __name__ == "__main__":
-
     bot = SahayakOrchestrator()
 
     while True:
-
-        query = input("\n👤 You : ").strip()
-
-        if query.lower() in ["exit", "quit"]:
-
-            print("\n👋 Goodbye!")
+        query = input("\nYou: ").strip()
+        if query.lower() in {"exit", "quit"}:
             break
 
-        answer = bot.process(query)
-
-        print("\n🤖 Sahayak AI:\n")
-
-        print(answer)
+        result = bot.process_with_trace(query)
+        print("\nSahayak AI:\n")
+        print(result.answer)
+        print("\nExecution Trace:")
+        for step in result.execution_trace:
+            print(f"- {step['label']}: {step['status']} ({step['execution_time_ms']} ms)")

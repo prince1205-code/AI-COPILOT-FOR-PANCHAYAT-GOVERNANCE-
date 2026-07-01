@@ -13,53 +13,114 @@ Project : AI Copilot for Panchayat Governance
 
 import json
 
-from src.services.ai_service import AIService
-from src.services.knowledge_loader import KnowledgeLoader
 
+from src.services.ai_service import AIService
+from src.services.context_builder import ContextBuilder
+from src.rag.retriever import Retriever
+from src.core.prompts import SYSTEM_PROMPT
 
 class SchemeAgent:
 
     def __init__(self):
-
         self.ai = AIService.get_ai()
 
-        self.loader = KnowledgeLoader()
+        self.retriever = Retriever()
+
+        self.context_builder = ContextBuilder()
 
 
-    def process(self, user_query: str):
+    def process(self, user_query: str, history=None):
 
-        """
-        Process Government Scheme Queries.
-        """
+        if history is None:
+            history = []
 
-        scheme = self.loader.search_scheme(user_query)
+        # -----------------------------------------
+        # Retrieve Top Documents
+        # -----------------------------------------
 
-        if scheme is None:
+        retrieved_documents = self.retriever.retrieve(
 
-            return (
-                "Sorry! I couldn't find any matching scheme "
-                "in the knowledge base."
-            )
+            user_query,
+
+            top_k=5
+
+        )
+
+        # -----------------------------------------
+        # Build Prompt
+        # -----------------------------------------
+
+        context = self.context_builder.build_context(
+
+            system_prompt=SYSTEM_PROMPT,
+
+            user_query=user_query,
+
+            conversation_history=history,
+
+            retrieved_documents=retrieved_documents
+
+        )
+
+        # -----------------------------------------
+        # Ask Gemini
+        # -----------------------------------------
+
+        return self.ai.ask(context)
 
         prompt = f"""
-You are Sahayak AI.
+You are Sahayak AI, an AI Assistant for Panchayat Governance.
 
-Use ONLY the following official scheme information.
+You MUST answer ONLY using the scheme information given below.
 
-Scheme Information:
+If the answer is not available in the scheme information,
+say clearly:
 
-{json.dumps(scheme, indent=4)}
+'I could not find this information in the official dataset.'
 
-User Question:
+=========================
+SCHEME INFORMATION
+=========================
+
+Name:
+{scheme.get("scheme_name","")}
+
+Category:
+{scheme.get("category","")}
+
+Level:
+{scheme.get("level","")}
+
+Description:
+{scheme.get("description","")}
+
+Benefits:
+{scheme.get("benefits","")}
+
+Eligibility:
+{scheme.get("eligibility","")}
+
+Application Process:
+{scheme.get("application_process","")}
+
+Required Documents:
+{scheme.get("required_documents","")}
+
+=========================
+USER QUESTION
+=========================
 
 {user_query}
 
-Instructions:
+=========================
+RULES
+=========================
 
-1. Answer using only the above information.
-2. Use simple language.
-3. If the answer is not present, clearly say so.
-4. Don't invent facts.
+1. Never invent information.
+2. Use only the above dataset.
+3. Reply in simple English.
+4. Use bullet points whenever appropriate.
+5. If something is unavailable, explicitly mention it.
 """
 
         return self.ai.ask(prompt)
@@ -73,18 +134,39 @@ if __name__ == "__main__":
 
     agent = SchemeAgent()
 
-    print("=" * 60)
-    print("Scheme Agent Started")
-    print("=" * 60)
+    history = []
 
     while True:
 
         query = input("\nUser : ")
 
-        if query.lower() == "exit":
+        if query.lower() in ["exit", "quit"]:
+
             break
 
-        response = agent.process(query)
+        response = agent.process(
+
+            query,
+
+            history
+
+        )
+
+        history.append({
+
+            "role": "user",
+
+            "content": query
+
+        })
+
+        history.append({
+
+            "role": "assistant",
+
+            "content": response
+
+        })
 
         print("\nSahayak AI:\n")
 

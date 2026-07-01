@@ -4,8 +4,8 @@ Sahayak AI - Knowledge Loader
 =========================================================
 
 Purpose:
-    Load and manage the Government Knowledge Base
-    stored as JSON files.
+    Loads the Government Schemes Knowledge Base
+    from enriched_schemes.json and provides search utilities.
 
 Author : Prince Kumar
 Project : AI Copilot for Panchayat Governance
@@ -13,100 +13,143 @@ Project : AI Copilot for Panchayat Governance
 """
 
 import json
-from pathlib import Path
+from difflib import get_close_matches
 
 from src.core.config import KNOWLEDGE_BASE_DIR
 
 
 class KnowledgeLoader:
     """
-    Loads JSON files from the knowledge base.
+    Loads and searches the Government Schemes dataset.
     """
 
     def __init__(self):
 
-        self.scheme_directory = KNOWLEDGE_BASE_DIR / "schemes"
+        self.dataset_path = KNOWLEDGE_BASE_DIR / "enriched_schemes.json"
 
-    def load_scheme(self, filename: str):
-        """
-        Load a single scheme JSON file.
+        self.schemes = self._load_dataset()
 
-        Parameters
-        ----------
-        filename : str
+        print(f"✅ Loaded {len(self.schemes)} schemes.")
 
-        Returns
-        -------
-        dict
-        """
 
-        file_path = self.scheme_directory / filename
+    # --------------------------------------------------
+    # Load Dataset
+    # --------------------------------------------------
 
-        if not file_path.exists():
+    def _load_dataset(self):
 
-            raise FileNotFoundError(
-                f"{filename} not found."
-            )
+        with open(self.dataset_path, "r", encoding="utf-8") as file:
 
-        with open(file_path, "r", encoding="utf-8") as file:
+            return json.load(file)
 
-            data = json.load(file)
 
-        return data
+    # --------------------------------------------------
+    # Search Scheme
+    # --------------------------------------------------
+    def search_scheme(self, query: str):
 
-    def load_all_schemes(self):
+        original_query = query
 
-        schemes = []
+        query = self.clean_query(query)
 
-        print("Searching in:", self.scheme_directory)
+        # -----------------------------
+        # Exact Name Match
+        # -----------------------------
 
-        files = list(self.scheme_directory.glob("*.json"))
+        for scheme in self.schemes:
 
-        print("Files Found:", files)
+            name = scheme.get("scheme_name", "").lower()
 
-        for file in files:
-
-            with open(file, "r", encoding="utf-8") as f:
-                schemes.append(json.load(f))
-
-        return schemes
-    
-    def search_scheme(self, keyword: str):
-        """
-        Search a scheme by multiple fields.
-
-        Parameters
-        ----------
-        keyword : str
-
-        Returns
-        -------
-        dict | None
-        """
-
-        keyword = keyword.lower().strip()
-
-        schemes = self.load_all_schemes()
-
-        for scheme in schemes:
-
-            searchable_text = " ".join([
-                scheme.get("scheme_name", ""),
-                scheme.get("scheme_id", ""),
-                scheme.get("category", ""),
-                scheme.get("description", ""),
-                scheme.get("objective", ""),
-                " ".join(scheme.get("keywords", []))
-            ]).lower()
-
-            if keyword in searchable_text:
+            if query == name:
                 return scheme
 
-        return None
-    
+        # -----------------------------
+        # Search in search_text
+        # -----------------------------
+
+        candidates = []
+
+        for scheme in self.schemes:
+
+            searchable = scheme.get("search_text", "").lower()
+
+            score = 0
+
+            for word in query.split():
+
+                if word in searchable:
+                    score += 1
+
+            if score > 0:
+
+                candidates.append((score, scheme))
+
+        if candidates:
+
+            candidates.sort(key=lambda x: x[0], reverse=True)
+
+            return candidates[0][1]
+
+        # -----------------------------
+        # Fuzzy Search
+        # -----------------------------
+
+        names = [
+
+            scheme.get("scheme_name", "")
+
+            for scheme in self.schemes
+
+        ]
+
+        matches = get_close_matches(
+
+            original_query,
+
+            names,
+
+            n=1,
+
+            cutoff=0.45
+
+        )
+
+        if matches:
+
+            for scheme in self.schemes:
+
+                if scheme["scheme_name"] == matches[0]:
+
+                    return scheme
+
+        return None    
+
+    def clean_query(self, query: str) -> str:
+        """
+        Clean natural language query into searchable keywords.
+        """
+
+        query = query.lower()
+
+        stop_words = [
+            "tell", "me", "about", "what", "is", "the",
+            "of", "scheme", "schemes", "yojana",
+            "please", "benefits", "benefit",
+            "eligibility", "eligible",
+            "information", "details",
+            "explain", "give", "show",
+            "for", "to", "how", "can", "i",
+            "do", "know"
+        ]
+
+        for word in stop_words:
+            query = query.replace(word, " ")
+
+        return " ".join(query.split())
 # ---------------------------------------------------------
 # Testing
 # ---------------------------------------------------------
+
 if __name__ == "__main__":
 
     loader = KnowledgeLoader()
@@ -117,25 +160,55 @@ if __name__ == "__main__":
 
     test_queries = [
 
+        "Tell me about Ayushman Bharat",
+
+        "Benefits of PM Kisan",
+
+        "Explain Ujjwala Yojana",
+
+        "Housing Schemes",
+
         "PMAY",
 
-        "Housing",
-
-        "Awas",
-
-        "Home",
-
-        "House"
+        "MGNREGA"
 
     ]
-
+    
     for query in test_queries:
+
+        print("\n" + "=" * 50)
+
+        print("Searching :", query)
 
         result = loader.search_scheme(query)
 
-        print(f"\nSearching : {query}")
-
         if result:
-            print("Found :", result["scheme_name"])
+
+            print("\n✅ Scheme Found\n")
+
+            print("Scheme Name :", result.get("scheme_name", ""))
+
+            print("Category    :", result.get("category", ""))
+
+            print("Level       :", result.get("level", ""))
+
+            print("Slug        :", result.get("slug", ""))
+
         else:
-            print("Not Found")
+
+            print("\n❌ No Scheme Found")
+
+
+    print("\n================ DEBUG ================\n")
+
+    count = 0
+
+    for scheme in loader.schemes:
+
+        if "ayushman" in scheme.get("search_text", "").lower():
+
+            count += 1
+
+            print(scheme["scheme_name"])
+
+    print("\nTotal Matches :", count)
