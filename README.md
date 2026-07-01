@@ -1,187 +1,91 @@
 # 🏛️ AI Copilot for Panchayat Governance
 
-A comprehensive AI-powered government portal designed for Indian citizens to access government schemes, submit applications with voice support, and receive instant assistance in multiple languages.
+AI-powered assistant and scheme recommendation platform for Indian panchayats — helps citizens discover eligible government schemes, complete voice-enabled applications, and get instant multilingual support.
 
-## 🌟 Features
+## What this project does
 
-### 🎤 Voice-Enabled Application Forms
-- Voice input for all form fields
-- Speak instead of typing
-- Real-time speech-to-text conversion
-- Support for Indian English accent
+- Helps citizens find government schemes that match their profile and eligibility.
+- Lets users complete scheme applications using voice (speech-to-text) and multilingual input.
+- Provides an AI assistant that answers scheme-related questions in the user's language.
+- Generates downloadable PDF receipts for submitted applications.
 
-### 🌐 Multi-Language Support
-- 22 Official Indian languages supported
-- Voice-based language selection
-- Complete UI translation
-- Language auto-detection in AI assistant
+Key user benefits: faster access to benefits, accessibility for low-literacy users, and support for multiple Indian languages.
 
-### 🤖 AI Assistant
-- Intelligent chatbot for scheme queries
-- Automatic language detection
-- Context-aware responses
-- Real-time assistance
+## Tech preview
 
-### 📄 PDF Receipt Generation
-- Automatic PDF generation on application submission
-- Professional government-style receipts
-- Downloadable and viewable in browser
-- Includes all application details
+This repository contains a Python FastAPI backend and a Vite-powered React frontend. The backend hosts APIs for the AI agents, text-to-speech/voice routing, and recommendation logic. The frontend provides a modern, mobile-friendly UI with voice capture.
 
-### 🔐 Secure Authentication
-- Aadhaar-based authentication
-- JWT token implementation
-- Password encryption with bcrypt
-- Secure API endpoints
+Primary technologies:
+- Python 3.8+ (FastAPI)
+- React + Vite (frontend)
+- gTTS / TTS utilities
+- FAISS vector store (local index under knowledge_base/vector_store)
+- (Optional) MongoDB or other datastore for production deployment
 
-### 📱 Responsive Design
-- Mobile-friendly interface
-- Modern UI with gradient backgrounds
-- Smooth animations
-- Professional government portal styling
+## Project layout
 
-## 🛠️ Tech Stack
-
-### Frontend
-- HTML5, CSS3, JavaScript
-- Speech Recognition API
-- Font Awesome Icons
-- Responsive Design
-
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- JWT Authentication
-- Multer (File Upload)
-- PDFKit (PDF Generation)
-
-## 📁 Project Structure
+The repository is organized to separate backend agents, API routes, and the frontend app:
 
 ```
-SAHAYAKAI/
-├── src/                          # Source code
-│   ├── agents/                   # AI agents
-│   │   ├── chat_agent.py
-│   │   ├── scheme_agent.py
-│   │   ├── knowledge_agent.py
-│   │   └── router.py
-│   ├── core/                     # Core functionality
-│   │   ├── ai_engine.py
-│   │   ├── orchestrator.py
-│   │   └── prompts.py
-│   └── services/                 # Services
-│       ├── ai_service.py
-│       └── knowledge_loader.py
-├── knowledge_base/               # Scheme data
-│   └── schemes/
-│       └── pm_awas.json
-├── notebooks/                    # Jupyter notebooks
-│   ├── 01_Project_Setup.ipynb
-│   ├── 02_Requirement_Analysis.ipynb
-│   ├── 03_System_Architecture.ipynb
-│   └── 05_AI_Copilot_Core.ipynb
-├── requirements.txt              # Python dependencies
-└── README.md                     # This file
-```
+README.md
+requirements.txt
+frontend/                # React + Vite frontend
+knowledge_base/          # Scheme data and FAISS vector store
+src/                     # Python backend (FastAPI) and AI agents
+	├── api/               # FastAPI routes
+	├── agents/            # Agent implementations
+	├── core/              # Orchestration and engine
+	└── rag/               # Retrieval-augmented generation helpers
+``` 
 
-## 🚀 Getting Started
+## Quick start (local)
 
-### Prerequisites
-- Python 3.8+
-- Node.js 14+
-- MongoDB
-- Modern web browser with Speech Recognition support
+1. Clone the repository
 
-### Installation
-
-1. **Clone the repository**
 ```bash
 git clone https://github.com/prince1205-code/AI-COPILOT-FOR-PANCHAYAT-GOVERNANCE-.git
 cd AI-COPILOT-FOR-PANCHAYAT-GOVERNANCE-
 ```
 
-2. **Install Python dependencies**
+2. Create a Python virtual environment and install dependencies
+
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. **Set up environment variables**
-Create `.env` file:
-```env
-MONGODB_URI=mongodb://localhost:27017/panchayat_db
-JWT_SECRET=your_jwt_secret_key
-PORT=5000
-```
+3. Start the backend (development)
 
-4. **Start MongoDB**
 ```bash
-mongod
+# from repo root
+uvicorn src.api.app:app --reload --port 8000
 ```
 
-5. **Run the application**
+4. Start the frontend
+
 ```bash
-python src/core/ai_engine.py
+cd frontend
+npm install
+npm run dev
 ```
 
-## 📚 Government Schemes Covered
+Open the frontend in your browser (usually http://localhost:5173) and browse the API at http://localhost:8000/docs
 
-- **Pradhan Mantri Awas Yojana** - Housing for all
-- **PM-KISAN** - Direct income support for farmers
-- **NREGA** - Rural employment guarantee
-- **Ayushman Bharat** - Healthcare coverage
-- **Sukanya Samriddhi Yojana** - Girl child welfare
-- **Atal Pension Yojana** - Pension scheme
+## Contributing
 
-## 🎯 Key Functionalities
+Contributions, issue reports and pull requests are welcome. If you want to improve the README, code, or add new scheme data, please open a PR.
 
-### Application Workflow
-1. User logs in with Aadhaar number
-2. Selects government scheme
-3. Fills 3-step form (Personal, Address, Financial)
-4. Uses voice input for convenience
-5. Submits application
-6. Views confirmation page with all details
-7. PDF receipt auto-downloads
-8. Can view PDF in browser
+Suggested contribution steps:
 
-### AI Assistant Workflow
-1. User speaks or types in any language
-2. AI detects language automatically
-3. Website switches to detected language
-4. Provides scheme information
-5. Answers queries in user's language
+1. Fork the repo and create a branch: `docs/readme-enhance` or `feature/<your-idea>`
+2. Make changes, run unit tests (if any), and ensure the frontend builds
+3. Open a pull request describing your change
 
-## 🔒 Security Features
-
-- Password hashing with bcrypt
-- JWT token-based authentication
-- Secure API endpoints
-- Input validation
-- XSS protection
-- CORS configuration
-
-## 📱 Supported Languages
-
-Hindi, Bengali, Tamil, Telugu, Gujarati, Marathi, Kannada, Malayalam, Punjabi, Odia, Urdu, Sanskrit, Assamese, Konkani, Manipuri, Bodo, Dogri, Kashmiri, Maithili, Nepali, Santali, Sindhi
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
-## 👨‍💻 Developer
-
-**Prince Kumar**
-- GitHub: [@prince1205-code](https://github.com/prince1205-code)
-
-## 📞 Support
-
-For support and queries, please open an issue in the GitHub repository.
-
 ---
 
-**Made with ❤️ for Digital India Initiative**
+Made with ❤️ by Prince Kumar — built for accessible, multilingual civic services.
