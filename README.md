@@ -72,6 +72,28 @@ npm run dev
 
 Open the frontend in your browser (usually http://localhost:5173) and browse the API at http://localhost:8000/docs
 
+## CI / Lint & Tests
+
+This repository does not currently include a CI pipeline by default. Local checks you can run:
+
+- Frontend lint (ESLint):
+
+```bash
+cd frontend
+npm install
+npm run lint
+```
+
+- Backend tests (if added):
+
+```bash
+# install pytest and run tests from repo root
+pip install pytest
+pytest -q
+```
+
+If you want, I can add a GitHub Actions workflow to run ESLint and pytest on each PR.
+
 ## Contributing
 
 Contributions, issue reports and pull requests are welcome. If you want to improve the README, code, or add new scheme data, please open a PR.
